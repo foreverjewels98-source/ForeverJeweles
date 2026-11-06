@@ -606,7 +606,7 @@ export default function CheckoutPage() {
 
       // 2. Open official Razorpay modal
       const options = {
-        key: orderData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_TvMWCPHmKI88QQ',
+        key: orderData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
         amount: orderData.amount,
         currency: orderData.currency || 'INR',
         name: 'Forever Jewell Studio',

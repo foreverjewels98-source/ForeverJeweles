@@ -23,6 +23,16 @@
 # misc
 .DS_Store
 *.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+*.swp
+*.swo
+
+# local database & customer order store (prevents customer PII from leaking to git)
+src/lib/orders-store.json
 
 # debug
 npm-debug.log*

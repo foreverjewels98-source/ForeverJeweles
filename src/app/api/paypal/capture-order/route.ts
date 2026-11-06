@@ -37,14 +37,14 @@ function getPayPalBaseUrl(): string {
 }
 
 async function getAccessToken(): Promise<string> {
-  const clientId =
-    process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ||
-    'BAAAWki3Kf21jPQFv5unqXV2gq6aqQXm_EJoRWmIM89zbwoT1RoK0JQ9D9VpsCeCVJckowRNzVhgnHcnEQ';
-  const clientSecret =
-    process.env.PAYPAL_CLIENT_SECRET ||
-    'EK309Mizn0oTOHnh5EEZx5FwoQOgTPUY_KFH-E6o2Y75B4F4ZP_XyQM8avqzhTDiyW1NpAyJaTKYg1gS';
+  const clientId = (process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID || '').trim();
+  const clientSecret = (process.env.PAYPAL_CLIENT_SECRET || '').trim();
 
-  const auth = Buffer.from(`${clientId.trim()}:${clientSecret.trim()}`).toString('base64');
+  if (!clientId || !clientSecret) {
+    throw new Error('PayPal API credentials not configured in environment variables.');
+  }
+
+  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
   const baseUrl = getPayPalBaseUrl();
 
   const res = await fetch(`${baseUrl}/v1/oauth2/token`, {
