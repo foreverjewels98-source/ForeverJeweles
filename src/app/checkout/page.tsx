@@ -215,18 +215,31 @@ export default function CheckoutPage() {
   const baseCurrencySymbol = selectedCurrency.symbol;
   const convertedSubtotal = Math.round(subtotal * selectedCurrency.rate);
   const shippingFee = 0; // Free express worldwide shipping
-  // Coupon / Promo Code State (supports TEST1 / RAZORPAY1 for live ₹1 testing)
+  // Scalable Promo Codes definition
+  const PROMO_CODES: Record<string, { type: 'percent' | 'test'; value: number; label: string }> = {
+    WELCOME10: { type: 'percent', value: 10, label: '10% Welcome Discount' },
+    FOREVER10: { type: 'percent', value: 10, label: '10% Store Discount' },
+    ROYAL15: { type: 'percent', value: 15, label: '15% Royal Luxury Discount' },
+    FESTIVE20: { type: 'percent', value: 20, label: '20% Festive Special Discount' },
+    TEST1: { type: 'test', value: 1, label: 'Special Promotional Discount' },
+    RAZORPAY1: { type: 'test', value: 1, label: 'Special Promotional Discount' },
+  };
+
+  // Coupon / Promo Code State
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [couponError, setCouponError] = useState('');
 
-  // Auto-apply from URL if ?coupon=TEST1 or ?test=1
+  // Auto-apply from URL if ?coupon=...
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const c = params.get('coupon') || (params.get('test') === '1' ? 'TEST1' : null);
-      if (c && (c.toUpperCase() === 'TEST1' || c.toUpperCase() === 'RAZORPAY1')) {
-        setAppliedCoupon(c.toUpperCase());
+      if (c) {
+        const upper = c.toUpperCase();
+        if (PROMO_CODES[upper]) {
+          setAppliedCoupon(upper);
+        }
       }
     } catch (_) {}
   }, []);
@@ -235,11 +248,11 @@ export default function CheckoutPage() {
     if (e) e.preventDefault();
     const clean = couponCode.trim().toUpperCase();
     if (!clean) return;
-    if (clean === 'TEST1' || clean === 'RAZORPAY1') {
+    if (PROMO_CODES[clean]) {
       setAppliedCoupon(clean);
       setCouponError('');
     } else {
-      setCouponError('Invalid coupon. Use TEST1 to test ₹1 payment.');
+      setCouponError('Invalid coupon code. Please check and try again.');
     }
   };
 
@@ -249,9 +262,19 @@ export default function CheckoutPage() {
     setCouponError('');
   };
 
-  const isTestCoupon = appliedCoupon === 'TEST1' || appliedCoupon === 'RAZORPAY1';
+  const appliedPromo = appliedCoupon ? PROMO_CODES[appliedCoupon] : null;
+  const isTestCoupon = appliedPromo?.type === 'test';
+
+  let couponDiscount = 0;
+  if (appliedPromo) {
+    if (appliedPromo.type === 'percent') {
+      couponDiscount = Math.round(convertedSubtotal * (appliedPromo.value / 100));
+    } else if (appliedPromo.type === 'test') {
+      couponDiscount = Math.max(0, convertedSubtotal - 1);
+    }
+  }
+
   const currencySymbol = isTestCoupon ? '₹' : baseCurrencySymbol;
-  const couponDiscount = isTestCoupon ? Math.max(0, convertedSubtotal - 1) : 0;
   const finalTotal = isTestCoupon ? 1 : Math.max(1, convertedSubtotal - couponDiscount + shippingFee);
 
   // Supported PayPal direct currencies
@@ -594,12 +617,31 @@ export default function CheckoutPage() {
           name: `${formData.firstName} ${formData.lastName}`.trim(),
           email: formData.email,
           contact: formData.phone,
+          method: 'upi',
+        },
+        config: {
+          display: {
+            blocks: {
+              upi: {
+                name: 'Pay using UPI',
+                instruments: [
+                  {
+                    method: 'upi',
+                  },
+                ],
+              },
+            },
+            sequence: ['block.upi'],
+            preferences: {
+              show_default_blocks: true,
+            },
+          },
         },
         notes: {
           address: `${formData.streetAddress}, ${formData.city}, ${formData.state} ${formData.postalCode}`,
         },
         theme: {
-          color: '#18181B',
+          color: '#064E3B',
         },
         modal: {
           ondismiss: () => {
@@ -647,8 +689,13 @@ export default function CheckoutPage() {
 
       const rzp = new (window as any).Razorpay(options);
       rzp.on('payment.failed', function (resp: any) {
-        console.error('Razorpay payment failed:', resp.error);
-        setRazorpayError(resp.error?.description || 'Payment was unsuccessful or cancelled.');
+        if (resp.error?.reason === 'payment_cancelled') {
+          console.warn('Razorpay payment cancelled by user:', resp.error?.description);
+          setRazorpayError('Payment was cancelled. You can try again whenever you are ready.');
+        } else {
+          console.error('Razorpay payment failed:', resp.error);
+          setRazorpayError(resp.error?.description || 'Payment was unsuccessful or cancelled.');
+        }
         setIsRazorpayLoading(false);
       });
       rzp.open();
@@ -1261,660 +1308,108 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Step 3: Payment Method Selector */}
+            {/* Step 3: Payment Method — 100% UPI Instant Checkout via Razorpay */}
             <div className="bg-white border border-[#E5E0D8] rounded-xl p-6 sm:p-7 shadow-sm">
-              <div className="flex items-center gap-2.5 mb-5">
-                <span className="w-6 h-6 rounded-full bg-[#18181B] text-white text-xs font-bold flex items-center justify-center">
-                  3
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-6 h-6 rounded-full bg-[#18181B] text-white text-xs font-bold flex items-center justify-center">
+                    3
+                  </span>
+                  <h2 className="text-base font-serif font-bold tracking-wide">
+                    Payment Method
+                  </h2>
+                </div>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#064E3B] text-[#D4AF37] uppercase tracking-wider shadow-xs">
+                  <Zap className="w-3 h-3 text-[#D4AF37]" /> Instant UPI
                 </span>
-                <h2 className="text-base font-serif font-bold tracking-wide">
-                  Payment Method
-                </h2>
               </div>
 
-              {/* Tabs for Payment Gateways */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1.5 bg-gray-100 rounded-xl mb-6">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('razorpay')}
-                  className={`relative py-3 px-2 text-xs font-semibold rounded-lg transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer ${
-                    paymentMethod === 'razorpay'
-                      ? 'bg-white text-gray-900 shadow-md border border-[#064E3B]/20 font-bold'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <span className="absolute -top-2.5 right-2 px-1.5 py-0.5 bg-[#064E3B] text-[#D4AF37] text-[9px] font-extrabold rounded-full tracking-wider shadow">
-                    INSTANT UPI
-                  </span>
-                  <Zap className="w-4 h-4 text-[#064E3B]" />
-                  <span>Razorpay / UPI</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('bank_transfer')}
-                  className={`relative py-3 px-2 text-xs font-semibold rounded-lg transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer ${
-                    paymentMethod === 'bank_transfer'
-                      ? 'bg-white text-gray-900 shadow-md border border-[#064E3B]/20 font-bold'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {isIndianCustomer && (
-                    <span className="absolute -top-2.5 right-2 px-1.5 py-0.5 bg-[#064E3B] text-[#D4AF37] text-[9px] font-extrabold rounded-full tracking-wider shadow">
-                      🇮🇳 BEST FOR INDIA
-                    </span>
-                  )}
-                  <Zap className="w-4 h-4 text-[#064E3B]" />
-                  <span>Manual Bank / QR</span>
-                </button>
+              {/* UPI via Razorpay Gateway Card */}
+              <div className="bg-gradient-to-b from-[#F0FDF8] to-white border border-[#A7F3D0] rounded-2xl p-5 sm:p-6 shadow-xs">
+                <div className="flex items-start justify-between border-b border-emerald-100 pb-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-[#064E3B] text-[#D4AF37] flex items-center justify-center font-bold text-xl shadow-sm shrink-0">
+                      ₹
+                    </div>
+                    <div>
+                      <h3 className="font-serif text-base font-bold text-gray-900 flex items-center gap-2">
+                        <span>Pay with UPI</span>
+                        <span className="text-[10px] font-sans px-2 py-0.5 bg-[#064E3B] text-[#D4AF37] rounded-full font-extrabold uppercase tracking-wider">
+                          Verified Gateway
+                        </span>
+                      </h3>
+                      <p className="text-xs text-gray-600 font-sans mt-0.5">
+                        Instant, zero-fee payment with Google Pay, PhonePe, Paytm, BHIM, or any UPI App & QR
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('paypal')}
-                  className={`py-3 px-2 text-xs font-semibold rounded-lg transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer ${
-                    paymentMethod === 'paypal'
-                      ? 'bg-white text-gray-900 shadow-md border border-gray-200 font-bold'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <CreditCard className="w-4 h-4 text-[#B89035]" />
-                  <span>{isIndianCustomer ? 'Intl. Cards / PayPal' : 'PayPal / Cards'}</span>
-                </button>
-
-                {!isIndianCustomer && (
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('payoneer')}
-                    className={`py-3 px-2 text-xs font-semibold rounded-lg transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer ${
-                      paymentMethod === 'payoneer'
-                        ? 'bg-white text-gray-900 shadow-md border border-gray-200 font-bold'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    <span className="w-4 h-4 rounded-full bg-[#FF4800] text-white text-[10px] font-bold flex items-center justify-center">
-                      P
+                {/* Supported UPI Apps */}
+                <div className="p-3.5 bg-white rounded-xl border border-emerald-100 mb-5">
+                  <p className="text-[10px] font-bold text-gray-700 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#064E3B]" /> Supported UPI Apps:
+                  </p>
+                  <div className="flex flex-wrap gap-2 text-xs font-semibold text-gray-800">
+                    <span className="px-2.5 py-1 bg-gray-50 rounded-md border border-gray-200 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-blue-500"></span> Google Pay
                     </span>
-                    <span>Payoneer</span>
-                  </button>
+                    <span className="px-2.5 py-1 bg-gray-50 rounded-md border border-gray-200 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-purple-600"></span> PhonePe
+                    </span>
+                    <span className="px-2.5 py-1 bg-gray-50 rounded-md border border-gray-200 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-sky-500"></span> Paytm UPI
+                    </span>
+                    <span className="px-2.5 py-1 bg-gray-50 rounded-md border border-gray-200 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-orange-500"></span> BHIM UPI
+                    </span>
+                    <span className="px-2.5 py-1 bg-gray-50 rounded-md border border-gray-200 flex items-center gap-1.5">
+                      <QrCode className="w-3.5 h-3.5 text-gray-600" /> Any UPI QR Code
+                    </span>
+                  </div>
+                </div>
+
+                {razorpayError && (
+                  <div className="p-3 mb-4 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                    <span>{razorpayError}</span>
+                  </div>
                 )}
 
+                {/* Primary UPI Pay Button */}
                 <button
                   type="button"
-                  onClick={() => setPaymentMethod('whatsapp')}
-                  className={`py-3 px-2 text-xs font-semibold rounded-lg transition-all flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer ${
-                    paymentMethod === 'whatsapp'
-                      ? 'bg-white text-gray-900 shadow-md border border-gray-200 font-bold'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                  onClick={handleRazorpayPayment}
+                  disabled={isRazorpayLoading}
+                  className="w-full py-4 px-6 bg-[#064E3B] hover:bg-[#053d2e] text-[#D4AF37] font-sans font-bold text-sm tracking-widest uppercase rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 active:scale-98 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <Send className="w-4 h-4 text-[#064E3B]" />
-                  <span>WhatsApp Order</span>
+                  {isRazorpayLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+                      <span>Opening Secure UPI Gateway...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-4 h-4" />
+                      <span>
+                        Pay ₹{(isTestCoupon ? 1 : (selectedCurrency.code === 'INR' ? finalTotal : Math.round(finalTotal * 86.5))).toLocaleString('en-IN')} via UPI
+                      </span>
+                    </>
+                  )}
                 </button>
+
+                <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-3 text-[11px] text-gray-500 font-sans">
+                  <span className="flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#064E3B]" />
+                    256-Bit Bank Encryption
+                  </span>
+                  <span>•</span>
+                  <span>Instant Order Confirmation</span>
+                  <span>•</span>
+                  <span>Powered by Razorpay</span>
+                </div>
               </div>
 
-              {/* TAB 0: RAZORPAY (INSTANT UPI, CARDS, NETBANKING) */}
-              {paymentMethod === 'razorpay' && (
-                <div className="space-y-4">
-                  <div className="bg-gradient-to-b from-[#F0FDF8] to-white border border-[#A7F3D0] rounded-2xl p-5 sm:p-6 shadow-xs">
-                    <div className="flex items-center justify-between border-b border-emerald-100 pb-4 mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#064E3B] text-white flex items-center justify-center font-bold text-lg shadow-sm">
-                          ₹
-                        </div>
-                        <div>
-                          <h3 className="font-serif text-base font-bold text-gray-900 flex items-center gap-2">
-                            <span>Instant Razorpay Checkout</span>
-                            <span className="text-[10px] font-sans px-2 py-0.5 bg-[#064E3B] text-[#D4AF37] rounded-full font-extrabold uppercase tracking-wider">
-                              Verified Merchant
-                            </span>
-                          </h3>
-                          <p className="text-xs text-gray-600 font-sans mt-0.5">
-                            Pay instantly with Google Pay, PhonePe, Paytm, BHIM, Cards & NetBanking
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Supported Payment Logos & Badges */}
-                    <div className="p-3.5 bg-white rounded-xl border border-emerald-100 mb-5">
-                      <p className="text-[10px] font-bold text-gray-700 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#064E3B]" /> Accepted Instant Payment Modes:
-                      </p>
-                      <div className="flex flex-wrap gap-2 text-xs font-semibold text-gray-800">
-                        <span className="px-2.5 py-1 bg-gray-50 rounded-md border border-gray-200">Google Pay</span>
-                        <span className="px-2.5 py-1 bg-gray-50 rounded-md border border-gray-200">PhonePe</span>
-                        <span className="px-2.5 py-1 bg-gray-50 rounded-md border border-gray-200">Paytm</span>
-                        <span className="px-2.5 py-1 bg-gray-50 rounded-md border border-gray-200">BHIM UPI</span>
-                        <span className="px-2.5 py-1 bg-gray-50 rounded-md border border-gray-200">Visa / Mastercard / RuPay</span>
-                        <span className="px-2.5 py-1 bg-gray-50 rounded-md border border-gray-200">NetBanking (All Banks)</span>
-                      </div>
-                    </div>
-
-                    {razorpayError && (
-                      <div className="p-3 mb-4 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
-                        <span>{razorpayError}</span>
-                      </div>
-                    )}
-
-                    {/* Pay Button */}
-                    <button
-                      type="button"
-                      onClick={handleRazorpayPayment}
-                      disabled={isRazorpayLoading}
-                      className="w-full py-4 px-6 bg-[#064E3B] hover:bg-[#053d2e] text-[#D4AF37] font-sans font-bold text-sm tracking-widest uppercase rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 active:scale-98 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {isRazorpayLoading ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
-                          <span>Opening Secure Payment Window...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Lock className="w-4 h-4" />
-                          <span>{isTestCoupon ? 'Pay ₹1 (Live Gateway Test) via Razorpay' : `Pay ${selectedCurrency.code === 'INR' ? `₹${finalTotal.toLocaleString('en-IN')}` : `₹${Math.round(finalTotal * 86.5).toLocaleString('en-IN')}`} via Razorpay`}</span>
-                        </>
-                      )}
-                    </button>
-
-                    <p className="text-[11px] text-gray-500 text-center mt-3 font-sans flex items-center justify-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#064E3B]" />
-                      256-Bit SSL Bank-Grade Encryption • Instant Order Confirmation
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 1: PAYPAL & CARDS */}
-              {paymentMethod === 'paypal' && (
-                <div className="space-y-4">
-                  <div className="bg-[#F8FAFC] border border-gray-200 rounded-lg p-4">
-                    {/* Notice for Indian visitors selecting PayPal */}
-                    {isIndianCustomer && (
-                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 mb-4 text-xs text-amber-900 flex items-start gap-2.5">
-                        <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                        <div>
-                          <p className="font-bold text-amber-950">Notice for Indian Shoppers:</p>
-                          <p className="text-[11px] text-amber-800 mt-0.5 leading-relaxed">
-                            PayPal processes transactions internationally in <strong>USD ($)</strong> for overseas credit cards. For 100% free and instant payments in Indian Rupees (₹), please select the <strong>UPI / Bank Transfer</strong> tab above using Google Pay, PhonePe, Paytm, or NetBanking.
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold text-gray-900">
-                        Pay with PayPal or Any Debit / Credit Card
-                      </span>
-                      <div className="flex items-center gap-1 text-[10px] text-gray-500">
-                        <Lock className="w-3 h-3 text-[#064E3B]" /> Encrypted
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-600 mb-3">
-                      Accepts <strong>Visa, MasterCard, American Express, Discover, and PayPal Balance</strong>. Customers outside India can pay directly in their local currency without extra exchange fees.
-                    </p>
-
-                    <div className="flex flex-wrap items-center gap-2 mb-4">
-                      {['VISA', 'Mastercard', 'AMEX', 'Discover', 'PayPal'].map((brand) => (
-                        <span
-                          key={brand}
-                          className="px-2 py-0.5 bg-white border border-gray-300 rounded text-[10px] font-bold text-gray-700 tracking-wider"
-                        >
-                          {brand}
-                        </span>
-                      ))}
-                    </div>
-
-                    {!isDirectPayPal && (
-                      <div className="bg-amber-50 border border-amber-200 rounded-md p-2.5 mb-4 text-[11px] text-amber-900 flex items-start gap-2">
-                        <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                        <div>
-                          <span>
-                            PayPal processes international transactions in <strong>USD ($)</strong>. Your order of{' '}
-                            <strong>{currencySymbol}{finalTotal.toLocaleString()}</strong> will be charged as{' '}
-                            <strong>${paypalAmount.toLocaleString()} USD</strong> at real-time conversion.
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Direct Server-to-Server PayPal & Card Gateway (Zero Popups, 100% Mobile & Edge Compatible) */}
-                    <div className="space-y-3 mt-4">
-                      {isRedirectingToPayPal ? (
-                        <div className="py-8 px-4 bg-white rounded-xl border-2 border-[#D4AF37] text-center space-y-3 shadow-md">
-                          <div className="w-9 h-9 rounded-full border-3 border-[#003087] border-t-transparent animate-spin mx-auto" />
-                          <h4 className="font-serif text-sm font-bold text-[#003087]">
-                            Connecting to PayPal Secure Bank Gateway...
-                          </h4>
-                          <p className="text-xs text-gray-500 max-w-xs mx-auto font-sans">
-                            Redirecting you directly to the official portal. No popups or browser blockers.
-                          </p>
-                        </div>
-                      ) : (
-                        <>
-                          {/* Button 1: PayPal Account / Wallet */}
-                          <button
-                            type="button"
-                            disabled={isSubmitting}
-                            onClick={handleEtsyStylePayPal}
-                            className="w-full py-4 px-4 bg-[#FFC439] hover:bg-[#F4B728] active:scale-95 text-[#003087] font-sans font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer border border-[#E0A800]"
-                          >
-                            <span className="font-serif italic font-black text-2xl tracking-tight text-[#003087]">
-                              Pay<span className="text-[#0079C1]">Pal</span>
-                            </span>
-                            <span className="text-xs uppercase tracking-wider font-extrabold text-[#003087] ml-1">
-                              • Checkout (${paypalAmount} USD)
-                            </span>
-                          </button>
-
-                          {/* Button 2: Direct Debit / Credit Card (PayPal Guest Checkout) */}
-                          <button
-                            type="button"
-                            disabled={isSubmitting}
-                            onClick={handleEtsyStylePayPal}
-                            className="w-full py-3.5 px-4 bg-[#18181B] hover:bg-black active:scale-95 text-white font-sans font-semibold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer border border-gray-800"
-                          >
-                            <CreditCard className="w-4 h-4 text-[#D4AF37]" />
-                            <span>Debit or Credit Card (Visa, MasterCard, AMEX)</span>
-                          </button>
-                        </>
-                      )}
-
-                      {paypalError && (
-                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700">
-                          <p className="font-semibold mb-1">PayPal connection notice:</p>
-                          <p>{paypalError}</p>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t border-gray-200 flex items-center justify-center gap-1.5 text-[10px] text-gray-500">
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#064E3B]" />
-                      <span>Direct 256-bit bank encryption via PayPal Official Checkout • 0% Extra Surcharge</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB: BANK / UPI TRANSFER (COMPREHENSIVE INDIAN PAYMENT FLOW) */}
-              {paymentMethod === 'bank_transfer' && (
-                <div className="space-y-5">
-                  <div className="bg-gradient-to-b from-[#F0FDF4] to-[#ECFDF5] border border-[#A7F3D0] rounded-2xl p-5 sm:p-6 shadow-xs">
-                    {/* Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#A7F3D0]/60 pb-4 mb-4">
-                      <div>
-                        <h4 className="text-sm font-bold text-[#064E3B] uppercase tracking-wider flex items-center gap-2">
-                          <Zap className="w-4 h-4 text-emerald-600 fill-emerald-500" />
-                          <span>Instant UPI & Kotak Mahindra Bank Direct Transfer</span>
-                        </h4>
-                        <p className="text-xs text-gray-600 mt-0.5">
-                          Pay directly from Google Pay, PhonePe, Paytm, BHIM, CRED or NetBanking with zero gateway surcharges.
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="px-2.5 py-1 bg-[#064E3B] text-[#D4AF37] text-[10px] font-bold rounded-full tracking-wider shadow-xs">
-                          ⚡ 0% FEES • INSTANT
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Sub-Tabs: UPI QR Code vs Bank Details */}
-                    <div className="flex items-center gap-2 p-1 bg-white/80 border border-[#A7F3D0] rounded-xl mb-5">
-                      <button
-                        type="button"
-                        onClick={() => setUpiSubTab('qr')}
-                        className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                          upiSubTab === 'qr'
-                            ? 'bg-[#064E3B] text-white shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
-                        }`}
-                      >
-                        <QrCode className="w-3.5 h-3.5" />
-                        <span>Scan UPI QR Code</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setUpiSubTab('manual')}
-                        className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                          upiSubTab === 'manual'
-                            ? 'bg-[#064E3B] text-white shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
-                        }`}
-                      >
-                        <Building2 className="w-3.5 h-3.5" />
-                        <span>NetBanking Details (NEFT/IMPS)</span>
-                      </button>
-                    </div>
-
-                    {/* VIEW A: DYNAMIC UPI QR CODE */}
-                    {upiSubTab === 'qr' && (
-                      <div className="space-y-4">
-                        <div className="bg-white border-2 border-emerald-500/20 rounded-2xl p-5 text-center shadow-sm space-y-3.5">
-                          <div>
-                            <span className="text-[11px] uppercase tracking-wider font-extrabold text-[#064E3B] block">
-                              Scan with Any UPI App
-                            </span>
-                            <div className="text-2xl font-serif font-black text-gray-900 mt-1">
-                              ₹{upiAmount.toLocaleString('en-IN')}
-                            </div>
-                            <p className="text-[11px] text-gray-500">
-                              Amount pre-configured • Beneficiary: Forever Jewell Studio
-                            </p>
-                          </div>
-
-                          {/* Dynamic QR Code */}
-                          <div className="relative inline-block mx-auto bg-white p-3 rounded-2xl border-2 border-[#D4AF37]/50 shadow-md">
-                            <img
-                              src={upiQrUrl}
-                              alt="Forever Jewell Studio UPI Payment QR"
-                              className="w-48 h-48 sm:w-56 sm:h-56 mx-auto object-contain rounded-xl"
-                            />
-                            <div className="absolute inset-x-0 bottom-1 flex justify-center">
-                              <span className="text-[9px] bg-[#064E3B] text-white px-2 py-0.5 rounded-full font-mono font-bold tracking-wider shadow">
-                                NPCI • BHIM UPI
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Supported Apps Pills */}
-                          <div>
-                            <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-2">
-                              Supported UPI Apps
-                            </p>
-                            <div className="flex flex-wrap items-center justify-center gap-1.5 text-[10px] font-bold text-gray-700">
-                              {['Google Pay', 'PhonePe', 'Paytm', 'BHIM', 'CRED', 'Amazon Pay', 'Any Bank App'].map((app) => (
-                                <span key={app} className="px-2 py-1 bg-gray-50 border border-gray-200 rounded-md">
-                                  {app}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Mobile 1-Click Tap to Pay Button */}
-                          <div className="pt-1 sm:hidden">
-                            <a
-                              href={upiUri}
-                              className="w-full py-3.5 px-4 bg-gradient-to-r from-[#064E3B] to-[#043327] hover:from-[#043327] hover:to-[#064E3B] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer border border-emerald-600"
-                            >
-                              <Smartphone className="w-4 h-4 text-[#D4AF37]" />
-                              <span>Tap to Pay ₹{upiAmount.toLocaleString('en-IN')} in Any UPI App</span>
-                            </a>
-                            <p className="text-[10px] text-gray-400 mt-1.5">
-                              Tapping opens your installed UPI app with the exact amount filled.
-                            </p>
-                          </div>
-
-                          {/* Copyable UPI ID Box */}
-                          <div className="pt-2 border-t border-gray-100 flex items-center justify-between bg-gray-50/80 px-3 py-2 rounded-xl text-xs">
-                            <div className="text-left">
-                              <span className="text-[10px] text-gray-400 block font-semibold uppercase">Or Pay to UPI ID / VPA</span>
-                              <span className="font-mono font-bold text-gray-900 text-xs sm:text-sm">{upiVpa}</span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => copyBankField(upiVpa, 'UPI ID')}
-                              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-white border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-800 cursor-pointer shadow-xs transition-colors"
-                            >
-                              {copiedBankField === 'UPI ID' ? (
-                                <>
-                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                  <span className="text-emerald-600">Copied</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="w-3.5 h-3.5" />
-                                  <span>Copy UPI ID</span>
-                                </>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* VIEW B: KOTAK MAHINDRA BANK NETBANKING DETAILS */}
-                    {upiSubTab === 'manual' && (
-                      <div className="bg-white border border-[#A7F3D0] rounded-xl p-4 sm:p-5 space-y-3 shadow-xs">
-                        <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-                          <div>
-                            <span className="text-[10px] uppercase font-semibold text-gray-400 block">Beneficiary Name</span>
-                            <span className="font-bold text-gray-900 text-xs sm:text-sm">Forever Jewell Studio</span>
-                          </div>
-                          <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">
-                            Current Account
-                          </span>
-                        </div>
-
-                        {/* Account Number */}
-                        <div className="flex items-center justify-between py-2 border-b border-gray-100 text-xs">
-                          <div>
-                            <span className="text-[10px] uppercase font-semibold text-gray-400 block">Bank Account Number</span>
-                            <span className="font-mono font-bold text-gray-900 text-sm sm:text-base tracking-wider">{bankAccount}</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => copyBankField(bankAccount, 'Account Number')}
-                            className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-white border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-800 cursor-pointer shadow-xs transition-colors"
-                          >
-                            {copiedBankField === 'Account Number' ? (
-                              <>
-                                <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                <span className="text-emerald-600">Copied</span>
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-3.5 h-3.5" />
-                                <span>Copy</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-
-                        {/* IFSC Code */}
-                        <div className="flex items-center justify-between py-2 border-b border-gray-100 text-xs">
-                          <div>
-                            <span className="text-[10px] uppercase font-semibold text-gray-400 block">Branch IFSC Code</span>
-                            <span className="font-mono font-bold text-gray-900 text-sm tracking-wider">{bankIfsc}</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => copyBankField(bankIfsc, 'IFSC')}
-                            className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-white border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-800 cursor-pointer shadow-xs transition-colors"
-                          >
-                            {copiedBankField === 'IFSC' ? (
-                              <>
-                                <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                <span className="text-emerald-600">Copied</span>
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-3.5 h-3.5" />
-                                <span>Copy</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-
-                        {/* Bank & Branch Info */}
-                        <div className="text-xs text-gray-600 pt-1 space-y-1">
-                          <p>
-                            <strong>Beneficiary Bank:</strong> {bankName} {bankCrn && <span>| <strong>CRN:</strong> {bankCrn}</span>}
-                          </p>
-                          <p>
-                            <strong>Branch:</strong> {bankBranch}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Step 2: Enter Transaction ID / UTR */}
-                    <div className="pt-2">
-                      <label className="block text-xs font-bold text-gray-900 mb-1.5">
-                        Enter 12-Digit UPI Reference ID / UTR Number *
-                      </label>
-                      <input
-                        type="text"
-                        value={bankReference}
-                        onChange={(e) => setBankReference(e.target.value)}
-                        placeholder="e.g. 428192847291 or UTR from payment receipt"
-                        className={`w-full px-4 py-3 text-xs bg-white border ${
-                          errors.bankReference ? 'border-red-500 ring-2 ring-red-200' : 'border-gray-300'
-                        } rounded-xl font-mono text-gray-900 focus:outline-none focus:border-[#064E3B] focus:ring-2 focus:ring-[#064E3B]/20 shadow-xs`}
-                      />
-                      {errors.bankReference ? (
-                        <p className="text-[11px] text-red-600 mt-1 font-semibold">{errors.bankReference}</p>
-                      ) : (
-                        <p className="text-[11px] text-gray-500 mt-1">
-                          💡 You will find the 12-digit UTR in your payment details in Google Pay, PhonePe, or Paytm once completed.
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Confirm Button */}
-                    <div className="mt-4 pt-1">
-                      <button
-                        type="button"
-                        disabled={isSubmitting}
-                        onClick={() => handlePlaceOrder()}
-                        className="w-full py-4 bg-gradient-to-r from-[#064E3B] to-[#022C22] hover:from-[#022C22] hover:to-[#064E3B] active:scale-95 text-[#D4AF37] font-sans text-xs font-extrabold tracking-widest uppercase transition-all shadow-lg rounded-xl flex items-center justify-center gap-2 cursor-pointer border border-[#D4AF37]/30"
-                      >
-                        <CheckCircle2 className="w-4 h-4 text-[#D4AF37]" />
-                        {isSubmitting
-                          ? 'Registering Order...'
-                          : `Confirm UPI / Bank Order (${currencySymbol}${finalTotal.toLocaleString()})`}
-                      </button>
-                    </div>
-
-                    {/* Jaipur Artisan Concierge Support */}
-                    <div className="pt-3 border-t border-[#A7F3D0]/60 flex items-center justify-between text-[11px] text-gray-600">
-                      <span className="flex items-center gap-1.5">
-                        <ShieldCheck className="w-3.5 h-3.5 text-[#064E3B]" />
-                        <span>Direct Studio Confirmation • Jaipur, Rajasthan</span>
-                      </span>
-                      <a
-                        href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919828930454'}?text=Hi%20ForeverJewell%20Team,%20I%20have%20a%20question%20regarding%20UPI%20payment%20for%20my%20order.`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#064E3B] font-bold hover:underline flex items-center gap-1"
-                      >
-                        <Send className="w-3 h-3" />
-                        <span>WhatsApp Help</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 2: PAYONEER */}
-              {paymentMethod === 'payoneer' && (
-                <div className="space-y-4">
-                  <div className="bg-[#FFF7ED] border border-[#FFEDD5] rounded-lg p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h4 className="text-xs font-bold text-[#9A3412] uppercase tracking-wider">
-                          Payoneer Direct Transfer
-                        </h4>
-                        <p className="text-xs text-gray-600 mt-1">
-                          Transfer directly using your Payoneer balance or Payoneer payment link.
-                        </p>
-                      </div>
-                      <span className="px-2 py-0.5 bg-[#EA580C] text-white text-[10px] font-bold rounded">
-                        0% Surcharge
-                      </span>
-                    </div>
-
-                    <div className="bg-white border border-gray-200 rounded p-3 mb-4">
-                      <div className="flex items-center justify-between text-xs">
-                        <div>
-                          <span className="text-gray-500 block text-[10px] uppercase font-semibold">
-                            Beneficiary Payoneer Email
-                          </span>
-                          <span className="font-mono font-bold text-gray-900 select-all">
-                            {process.env.NEXT_PUBLIC_PAYONEER_EMAIL || 'Foreverjewels98@gmail.com'}
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={copyPayoneerEmail}
-                          className="flex items-center gap-1 px-2.5 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50 active:scale-90 text-gray-700 cursor-pointer transition-all"
-                        >
-                          {copiedPayoneer ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-green-600" />
-                              <span>Copied</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5" />
-                              <span>Copy</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Your Payoneer Email or Transaction Reference ID *
-                      </label>
-                      <input
-                        type="text"
-                        value={payoneerReference}
-                        onChange={(e) => setPayoneerReference(e.target.value)}
-                        placeholder="e.g. your_email@example.com or Trx ID #10892"
-                        className={`w-full px-3.5 py-2.5 text-xs bg-white border ${
-                          errors.payoneer ? 'border-red-500' : 'border-gray-300'
-                        } rounded focus:outline-none focus:border-[#B89035]`}
-                      />
-                      {errors.payoneer && (
-                        <p className="text-[11px] text-red-600 mt-1">{errors.payoneer}</p>
-                      )}
-                    </div>
-
-                    <div className="mt-4">
-                      <button
-                        type="button"
-                        disabled={isSubmitting}
-                        onClick={() => handlePlaceOrder()}
-                        className="w-full py-3.5 bg-[#EA580C] hover:bg-[#C2410C] active:scale-95 text-white font-sans text-xs font-bold tracking-widest uppercase transition-all shadow-md rounded-lg flex items-center justify-center gap-2 cursor-pointer"
-                      >
-                        <CheckCircle2 className="w-4 h-4" />
-                        {isSubmitting
-                          ? 'Submitting Order...'
-                          : `Confirm Payoneer Order (${currencySymbol}${finalTotal.toLocaleString()})`}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 3: WHATSAPP DIRECT ORDER */}
-              {paymentMethod === 'whatsapp' && (
-                <div className="space-y-4">
-                  <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-lg p-5">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Send className="w-4 h-4 text-[#064E3B]" />
-                      <h4 className="text-xs font-bold text-[#064E3B] uppercase tracking-wider">
-                        1-Click WhatsApp Concierge Order
-                      </h4>
-                    </div>
-                    <p className="text-xs text-gray-600 mb-4">
-                      Prefer to finalize payment and discuss custom engraving or ring sizing directly with our jewelry team? Submit your order here and it will open directly on WhatsApp with your complete shipping address.
-                    </p>
-
-                    <button
-                      type="button"
-                      disabled={isSubmitting}
-                      onClick={() => handlePlaceOrder({ method: 'whatsapp', status: 'pending' })}
-                      className="w-full py-3.5 bg-[#064E3B] hover:bg-[#043327] active:scale-95 text-[#D4AF37] font-sans text-xs font-bold tracking-widest uppercase transition-all shadow-md rounded-lg flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <Send className="w-4 h-4" />
-                      {isSubmitting
-                        ? 'Creating Order...'
-                        : `Place Order & Message on WhatsApp (${currencySymbol}${finalTotal.toLocaleString()})`}
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
@@ -2022,18 +1517,20 @@ export default function CheckoutPage() {
                   <span className="text-gray-500 text-[11px]">Included in total</span>
                 </div>
 
-                {/* Live Gateway Test / Coupon Discount */}
+                {/* Coupon Discount */}
                 {appliedCoupon && (
-                  <div className="flex justify-between items-center bg-emerald-50 border border-emerald-200 text-emerald-800 px-2.5 py-1.5 rounded-lg">
+                  <div className="flex justify-between items-center bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-2 rounded-lg">
                     <div>
-                      <div className="flex items-center gap-1 font-bold text-[11px]">
-                        <Tag className="w-3 h-3 text-emerald-600" />
-                        <span>Coupon Applied ({appliedCoupon})</span>
+                      <div className="flex items-center gap-1.5 font-bold text-xs">
+                        <Tag className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Coupon ({appliedCoupon}) Applied</span>
                       </div>
-                      <span className="block text-[10px] text-emerald-600 font-medium">Live Gateway ₹1 Test Active</span>
+                      <span className="block text-[11px] text-emerald-700 font-medium mt-0.5">
+                        {appliedPromo?.label || 'Discount Applied'}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-emerald-700">
+                      <span className="font-bold text-emerald-700 text-sm">
                         -{currencySymbol}{couponDiscount.toLocaleString()}
                       </span>
                       <button
@@ -2054,23 +1551,23 @@ export default function CheckoutPage() {
                     <form onSubmit={handleApplyCoupon} className="flex gap-2">
                       <input
                         type="text"
-                        placeholder="Coupon (use TEST1 for ₹1)"
+                        placeholder="Enter coupon code (e.g. WELCOME10)"
                         value={couponCode}
                         onChange={(e) => {
                           setCouponCode(e.target.value);
                           if (couponError) setCouponError('');
                         }}
-                        className="flex-1 bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs uppercase font-mono tracking-wider focus:outline-none focus:border-[#B76E79]"
+                        className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs uppercase font-mono tracking-wider focus:outline-none focus:border-[#B76E79]"
                       />
                       <button
                         type="submit"
-                        className="px-3 py-1 bg-gray-900 hover:bg-black text-white rounded-lg text-xs font-semibold cursor-pointer transition"
+                        className="px-3.5 py-1.5 bg-gray-900 hover:bg-black text-white rounded-lg text-xs font-semibold cursor-pointer transition"
                       >
                         Apply
                       </button>
                     </form>
                     {couponError && (
-                      <p className="text-[10px] text-red-600 mt-1">{couponError}</p>
+                      <p className="text-[11px] text-red-600 mt-1 font-medium">{couponError}</p>
                     )}
                   </div>
                 )}
