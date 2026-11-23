@@ -212,7 +212,7 @@ async function sendResendWithRetry(
  */
 export async function sendOrderNotifications({ order, siteUrl = 'https://ring-pearl.vercel.app' }: SendOrderNotificationOptions) {
   const resendApiKey = process.env.RESEND_API_KEY;
-  const primaryAdmin = (process.env.ADMIN_2FA_EMAIL || process.env.ADMIN_NOTIFICATION_EMAIL || 'ash33876@gmail.com').trim().toLowerCase();
+  const primaryAdmin = (process.env.ADMIN_2FA_EMAIL || process.env.ADMIN_NOTIFICATION_EMAIL || 'Foreverjewels98@gmail.com').trim().toLowerCase();
   const secondaryAdmin = (process.env.ADMIN_SECONDARY_EMAIL || process.env.STORE_OWNER_EMAIL || 'Foreverjewels98@gmail.com').trim().toLowerCase();
   const fromEmail = process.env.SENDER_EMAIL || 'onboarding@resend.dev';
 
@@ -225,7 +225,7 @@ export async function sendOrderNotifications({ order, siteUrl = 'https://ring-pe
     const { Resend } = await import('resend');
     const resend = new Resend(resendApiKey);
 
-    // 1. Send alert to Primary Admin (ash33876@gmail.com)
+    // 1. Send alert to Primary Admin (Foreverjewels98@gmail.com)
     if (primaryAdmin && primaryAdmin.includes('@')) {
       const adminRes = await sendResendWithRetry(resend, {
         from: `Forever Jewell Store Alert <${fromEmail}>`,
@@ -337,7 +337,7 @@ export async function sendOrderStatusUpdateNotification({
   siteUrl = 'https://ring-pearl.vercel.app',
 }: SendOrderNotificationOptions) {
   const resendApiKey = process.env.RESEND_API_KEY;
-  const adminEmail = process.env.ADMIN_2FA_EMAIL || process.env.ADMIN_NOTIFICATION_EMAIL || 'ash33876@gmail.com';
+  const adminEmail = process.env.ADMIN_2FA_EMAIL || process.env.ADMIN_NOTIFICATION_EMAIL || 'Foreverjewels98@gmail.com';
   const fromEmail = process.env.SENDER_EMAIL || 'onboarding@resend.dev';
 
   if (!resendApiKey) return { success: false };

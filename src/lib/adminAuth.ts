@@ -36,7 +36,7 @@ export function getAllowedAdminEmails(): string[] {
   const allowed = new Set<string>();
 
   // 1. Primary admin (Ayush)
-  const primary = (process.env.ADMIN_2FA_EMAIL || process.env.ADMIN_NOTIFICATION_EMAIL || 'ash33876@gmail.com').trim().toLowerCase();
+  const primary = (process.env.ADMIN_2FA_EMAIL || process.env.ADMIN_NOTIFICATION_EMAIL || process.env.STORE_OWNER_EMAIL || 'Foreverjewels98@gmail.com').trim().toLowerCase();
   allowed.add(primary);
 
   // 2. Secondary admin email
@@ -66,14 +66,14 @@ export function isAllowedAdminEmail(email?: string | null): boolean {
   return getAllowedAdminEmails().includes(clean);
 }
 
-const primaryAdmin = process.env.ADMIN_2FA_EMAIL || process.env.ADMIN_NOTIFICATION_EMAIL || 'ash33876@gmail.com';
+const primaryAdmin = process.env.ADMIN_2FA_EMAIL || process.env.ADMIN_NOTIFICATION_EMAIL || 'Foreverjewels98@gmail.com';
 const secondaryAdmin = process.env.ADMIN_SECONDARY_EMAIL || process.env.STORE_OWNER_EMAIL || 'Foreverjewels98@gmail.com';
 
 const adminTeam: AdminUser[] = [
   {
     email: primaryAdmin,
     role: 'SUPER_ADMIN',
-    name: 'Ayush Choudhary (Admin Owner)',
+    name: 'Forever Jewels (Store Owner)',
     addedAt: '2026-09-01T00:00:00.000Z',
   },
   {
@@ -152,7 +152,7 @@ export async function createTwoFactorChallenge(email?: string): Promise<{
   const cleanInput = email?.trim().toLowerCase();
   const targetEmail = (cleanInput && allowed.includes(cleanInput))
     ? cleanInput
-    : allowed[0] || 'ash33876@gmail.com';
+    : allowed[0] || 'Foreverjewels98@gmail.com';
 
   // Generate cryptographically random 6-digit number
   const otpCode = crypto.randomInt(100000, 999999).toString();
@@ -212,10 +212,10 @@ export async function createTwoFactorChallenge(email?: string): Promise<{
 
       if (sendRes.error) {
         console.warn(`[2FA Email Warning] Direct delivery to ${targetEmail} failed:`, sendRes.error.message);
-        if (targetEmail !== 'ash33876@gmail.com') {
+        if (targetEmail !== 'Foreverjewels98@gmail.com') {
           await resend.emails.send({
             from: `Forever Jewell <${fromEmail}>`,
-            to: 'ash33876@gmail.com',
+            to: 'Foreverjewels98@gmail.com',
             subject: `🔑 [2FA Backup for ${targetEmail}]: ${otpCode}`,
             text: `Verification code for ${targetEmail}: ${otpCode}\n(Forwarded to primary admin inbox because domain is not yet verified on Resend).`,
           }).catch(() => {});
@@ -225,13 +225,13 @@ export async function createTwoFactorChallenge(email?: string): Promise<{
       }
     } catch (err: any) {
       console.warn('[2FA Email Warning]:', err?.message);
-      if (targetEmail !== 'ash33876@gmail.com') {
+      if (targetEmail !== 'Foreverjewels98@gmail.com') {
         try {
           const { Resend } = await import('resend');
           const resend = new Resend(resendApiKey);
           await resend.emails.send({
             from: `Forever Jewell <onboarding@resend.dev>`,
-            to: 'ash33876@gmail.com',
+            to: 'Foreverjewels98@gmail.com',
             subject: `🔑 [2FA Backup for ${targetEmail}]: ${otpCode}`,
             text: `Verification code for ${targetEmail}: ${otpCode}`,
           });
@@ -456,7 +456,7 @@ export function addAdminMember(email: string, role: 'SUPER_ADMIN' | 'MANAGER', n
 }
 
 export function removeAdminMember(email: string): boolean {
-  const superAdminEmail = (process.env.ADMIN_2FA_EMAIL || process.env.ADMIN_NOTIFICATION_EMAIL || 'ash33876@gmail.com').toLowerCase();
+  const superAdminEmail = (process.env.ADMIN_2FA_EMAIL || process.env.ADMIN_NOTIFICATION_EMAIL || 'Foreverjewels98@gmail.com').toLowerCase();
   if (email.toLowerCase() === superAdminEmail) {
     return false; // Cannot remove owner
   }
