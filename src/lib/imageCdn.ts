@@ -28,20 +28,9 @@ export function getCdnImageUrl(src: string, options: ImageCdnOptions = {}): stri
 
   const { width, height, quality = 80, format = 'origin' } = options;
 
-  // 1. Supabase Storage CDN Transformation
+  // 1. Supabase Storage Direct CDN Delivery (Cloudflare Edge Cached)
   if (targetSrc.includes('.supabase.co/storage/v1/object/public/')) {
-    const transformedBase = targetSrc.replace(
-      '/storage/v1/object/public/',
-      '/storage/v1/render/image/public/'
-    );
-    const params = new URLSearchParams();
-    if (width) params.set('width', String(Math.round(width)));
-    if (height) params.set('height', String(Math.round(height)));
-    if (quality) params.set('quality', String(quality));
-    if (format && format !== 'origin') params.set('format', format);
-
-    const queryString = params.toString();
-    return queryString ? `${transformedBase}?${queryString}` : transformedBase;
+    return targetSrc;
   }
 
   // 2. Unsplash Image CDN

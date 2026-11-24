@@ -44,6 +44,7 @@ const nextConfig: NextConfig = {
   compress: true, // Enable automatic Brotli/Gzip response compression for zero delay
   poweredByHeader: false, // Security: Hide 'X-Powered-By: Next.js' to prevent fingerprinting
   images: {
+    unoptimized: true, // Instant parallel loading from CDN without Vercel serverless queue delay
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     qualities: [70, 75, 80, 85, 90, 95, 100],
@@ -59,6 +60,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: '**.supabase.co',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ik.imagekit.io',
         pathname: '/**',
       },
       {
