@@ -120,9 +120,8 @@ export default function Header() {
               {/* Brand Logo (Left) */}
               <div className="flex items-center justify-start shrink-0 lg:order-1 py-1 lg:py-0">
                 <Link href="/" className="group flex items-center">
-                  <span className="font-serif italic text-[18px] sm:text-[30px] lg:text-[36px] font-bold text-[#D39EAA] group-hover:text-white transition-colors tracking-wide flex flex-col sm:block leading-[1.1] sm:leading-normal">
-                    <span>Forever</span>{' '}
-                    <span className="-mt-0.5 sm:mt-0">Jewells</span>
+                  <span className="font-serif italic text-[18px] sm:text-[30px] lg:text-[36px] font-bold text-[#D39EAA] group-hover:text-white transition-colors tracking-wide whitespace-nowrap leading-none">
+                    ForeverJewells
                   </span>
                 </Link>
               </div>

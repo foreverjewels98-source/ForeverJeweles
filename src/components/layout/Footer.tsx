@@ -24,7 +24,7 @@ export default function Footer() {
           <div>
             <div className="flex flex-col items-start leading-[0.9] mb-4">
               <span className="font-serif italic text-[36px] sm:text-[44px] tracking-wide font-bold text-[#D39EAA]">
-                Forever Jewells
+                ForeverJewells
               </span>
             </div>
             <p className="font-sans text-xs tracking-[0.25em] text-gray-400 uppercase mt-1 mb-4 font-semibold">

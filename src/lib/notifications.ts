@@ -44,7 +44,7 @@ export function generateCustomerEmailHtml(order: Order, siteUrl: string): string
         
         <!-- Header -->
         <div style="background-color: #18181b; padding: 28px 24px; text-align: center;">
-          <h1 style="color: #c5a059; font-size: 20px; font-weight: 400; letter-spacing: 3px; margin: 0; text-transform: uppercase;">Forever Jewellss</h1>
+          <h1 style="color: #c5a059; font-size: 20px; font-weight: 400; letter-spacing: 3px; margin: 0; text-transform: uppercase;">ForeverJewellss</h1>
           <p style="color: #a1a1aa; font-size: 11px; letter-spacing: 2px; margin: 6px 0 0 0; text-transform: uppercase;">Handcrafted Fine Moissanite Jewelry</p>
         </div>
 
@@ -107,7 +107,7 @@ export function generateCustomerEmailHtml(order: Order, siteUrl: string): string
         <!-- Footer -->
         <div style="background-color: #faf8f5; border-top: 1px solid #e5e0d8; padding: 20px; text-align: center; font-size: 12px; color: #9ca3af;">
           Questions? Reply to this email or message our artisan concierge on WhatsApp at +91 98289 30454.<br/>
-          &copy; ${new Date().getFullYear()} Forever Jewellss. All rights reserved.
+          &copy; ${new Date().getFullYear()} ForeverJewellss. All rights reserved.
         </div>
       </div>
     </body>
@@ -228,7 +228,7 @@ export async function sendOrderNotifications({ order, siteUrl = 'https://ring-pe
     // 1. Send alert to Primary Admin (Foreverjewels98@gmail.com)
     if (primaryAdmin && primaryAdmin.includes('@')) {
       const adminRes = await sendResendWithRetry(resend, {
-        from: `Forever Jewells Store Alert <${fromEmail}>`,
+        from: `ForeverJewells Store Alert <${fromEmail}>`,
         replyTo: order.customer.email || primaryAdmin,
         to: primaryAdmin,
         subject: `🎉 NEW ORDER #${order.id} (${order.currencySymbol}${Number(order.total || 0).toLocaleString()} ${order.currency}) - ${order.customer.firstName} ${order.customer.lastName}`,
@@ -245,7 +245,7 @@ export async function sendOrderNotifications({ order, siteUrl = 'https://ring-pe
     // 2. Also send alert to Secondary Store Admin (Foreverjewels98@gmail.com)
     if (secondaryAdmin && secondaryAdmin !== primaryAdmin && secondaryAdmin.includes('@')) {
       const secRes = await sendResendWithRetry(resend, {
-        from: `Forever Jewells Store Alert <${fromEmail}>`,
+        from: `ForeverJewells Store Alert <${fromEmail}>`,
         replyTo: order.customer.email || secondaryAdmin,
         to: secondaryAdmin,
         subject: `🎉 NEW ORDER #${order.id} (${order.currencySymbol}${Number(order.total || 0).toLocaleString()} ${order.currency}) - ${order.customer.firstName} ${order.customer.lastName}`,
@@ -258,7 +258,7 @@ export async function sendOrderNotifications({ order, siteUrl = 'https://ring-pe
           console.warn(`[Email Notice]: Resend Sandbox Mode: Cannot deliver directly to ${secondaryAdmin} until custom domain is verified at resend.com/domains.`);
           // Forward copy to primary admin clearly labeled for secondary admin
           await sendResendWithRetry(resend, {
-            from: `Forever Jewells Store Alert <${fromEmail}>`,
+            from: `ForeverJewells Store Alert <${fromEmail}>`,
             to: primaryAdmin,
             subject: `📋 [For Admin: ${secondaryAdmin}] NEW ORDER #${order.id} (${order.currencySymbol}${Number(order.total || 0).toLocaleString()})`,
             html: `
@@ -283,17 +283,17 @@ export async function sendOrderNotifications({ order, siteUrl = 'https://ring-pe
     // 3. Send confirmation to Customer
     if (order.customer.email && order.customer.email.includes('@') && order.customer.email !== primaryAdmin) {
       const customerResult = await sendResendWithRetry(resend, {
-        from: `Forever Jewellss <${fromEmail}>`,
+        from: `ForeverJewellss <${fromEmail}>`,
         replyTo: secondaryAdmin || primaryAdmin,
         to: order.customer.email,
-        subject: `✨ Order Confirmation #${order.id} - Forever Jewellss`,
+        subject: `✨ Order Confirmation #${order.id} - ForeverJewellss`,
         html: generateCustomerEmailHtml(order, siteUrl),
       });
 
       if (customerResult.error) {
         console.warn(`[Email]: Cannot deliver directly to customer ${order.customer.email} (domain not verified on Resend). Forwarding receipt to admin.`);
         await sendResendWithRetry(resend, {
-          from: `Forever Jewellss <${fromEmail}>`,
+          from: `ForeverJewellss <${fromEmail}>`,
           to: primaryAdmin,
           subject: `📋 Customer Receipt (FWD) #${order.id} → Please forward to ${order.customer.email}`,
           html: `
@@ -314,9 +314,9 @@ export async function sendOrderNotifications({ order, siteUrl = 'https://ring-pe
     } else if (order.customer.email === primaryAdmin) {
       // Customer is primary admin (testing scenario)
       await sendResendWithRetry(resend, {
-        from: `Forever Jewellss <${fromEmail}>`,
+        from: `ForeverJewellss <${fromEmail}>`,
         to: primaryAdmin,
-        subject: `✨ Order Confirmation #${order.id} - Forever Jewellss`,
+        subject: `✨ Order Confirmation #${order.id} - ForeverJewellss`,
         html: generateCustomerEmailHtml(order, siteUrl),
       });
       console.log(`[Email ✓]: Customer receipt delivered (same as admin email)`);
@@ -361,7 +361,7 @@ export async function sendOrderStatusUpdateNotification({
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #fdfbf7; margin: 0; padding: 30px 15px;">
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e0d8; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         <div style="background-color: #064e3b; padding: 24px; text-align: center;">
-          <h1 style="color: #c5a059; font-size: 20px; font-weight: 400; letter-spacing: 3px; margin: 0; text-transform: uppercase;">Forever Jewellss</h1>
+          <h1 style="color: #c5a059; font-size: 20px; font-weight: 400; letter-spacing: 3px; margin: 0; text-transform: uppercase;">ForeverJewellss</h1>
           <p style="color: #a7f3d0; font-size: 11px; letter-spacing: 2px; margin: 6px 0 0 0; text-transform: uppercase;">Order Status Update</p>
         </div>
         <div style="padding: 28px 24px;">
@@ -405,7 +405,7 @@ export async function sendOrderStatusUpdateNotification({
     // Try customer first
     if (order.customer.email && order.customer.email.includes('@')) {
       const custRes = await sendResendWithRetry(resend, {
-        from: `Forever Jewellss <${fromEmail}>`,
+        from: `ForeverJewellss <${fromEmail}>`,
         replyTo: adminEmail,
         to: order.customer.email,
         subject: `Update on Order #${order.id} - ${statusLabel}`,
@@ -415,7 +415,7 @@ export async function sendOrderStatusUpdateNotification({
       if (custRes.error && adminEmail) {
         // Forward to admin if domain restriction blocks customer delivery
         await sendResendWithRetry(resend, {
-          from: `Forever Jewellss <${fromEmail}>`,
+          from: `ForeverJewellss <${fromEmail}>`,
           to: adminEmail,
           subject: `📋 Status Update for #${order.id} (${order.customer.email})`,
           html,

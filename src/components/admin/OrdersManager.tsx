@@ -288,7 +288,7 @@ export default function OrdersManager({
       : `Your bespoke handcrafted order is currently in production with our master artisans.`;
 
     const message = encodeURIComponent(
-      `Hello ${order.customer.firstName}! Greetings from Forever Jewellss.\n\n` +
+      `Hello ${order.customer.firstName}! Greetings from ForeverJewellss.\n\n` +
       `Regarding your Order *#${order.id}* (${itemsList}):\n\n` +
       `${trackingMsg}\n\n` +
       `Please let us know if you need any adjustments or assistance. Thank you for choosing us!`

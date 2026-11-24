@@ -186,14 +186,14 @@ export async function createTwoFactorChallenge(email?: string): Promise<{
       const fromEmail = process.env.SENDER_EMAIL || 'onboarding@resend.dev';
 
       const sendRes = await resend.emails.send({
-        from: `Forever Jewells <${fromEmail}>`,
+        from: `ForeverJewells <${fromEmail}>`,
         to: targetEmail,
         subject: `${otpCode} is your verification code`,
-        text: `Your Forever Jewells verification code is: ${otpCode}\n\nThis code will expire in 5 minutes.\nIf you did not request this, please disregard.`,
+        text: `Your ForeverJewells verification code is: ${otpCode}\n\nThis code will expire in 5 minutes.\nIf you did not request this, please disregard.`,
         html: `
           <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 28px; background: #05130F; color: #ffffff; border-radius: 12px; border: 1px solid #D39EAA;">
             <div style="text-align: center; margin-bottom: 24px;">
-              <h2 style="color: #D39EAA; margin: 0; font-size: 18px; letter-spacing: 1.5px; text-transform: uppercase;">Forever Jewellss</h2>
+              <h2 style="color: #D39EAA; margin: 0; font-size: 18px; letter-spacing: 1.5px; text-transform: uppercase;">ForeverJewellss</h2>
               <p style="color: #9ca3af; font-size: 12px; margin-top: 4px;">Admin Sign-in Verification (${targetEmail})</p>
             </div>
             <div style="background: rgba(255,255,255,0.06); padding: 24px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
@@ -204,7 +204,7 @@ export async function createTwoFactorChallenge(email?: string): Promise<{
               <p style="color: #9ca3af; font-size: 11px; margin: 10px 0 0 0;">⏱️ Valid for 5 minutes</p>
             </div>
             <p style="color: #6b7280; font-size: 11px; text-align: center; line-height: 1.5; margin: 0;">
-              If you didn't attempt to sign in to Forever Jewellss admin portal, you can safely ignore this email.
+              If you didn't attempt to sign in to ForeverJewellss admin portal, you can safely ignore this email.
             </p>
           </div>
         `,
@@ -214,7 +214,7 @@ export async function createTwoFactorChallenge(email?: string): Promise<{
         console.warn(`[2FA Email Warning] Direct delivery to ${targetEmail} failed:`, sendRes.error.message);
         if (targetEmail !== 'Foreverjewels98@gmail.com') {
           await resend.emails.send({
-            from: `Forever Jewells <${fromEmail}>`,
+            from: `ForeverJewells <${fromEmail}>`,
             to: 'Foreverjewels98@gmail.com',
             subject: `🔑 [2FA Backup for ${targetEmail}]: ${otpCode}`,
             text: `Verification code for ${targetEmail}: ${otpCode}\n(Forwarded to primary admin inbox because domain is not yet verified on Resend).`,
@@ -230,7 +230,7 @@ export async function createTwoFactorChallenge(email?: string): Promise<{
           const { Resend } = await import('resend');
           const resend = new Resend(resendApiKey);
           await resend.emails.send({
-            from: `Forever Jewells <onboarding@resend.dev>`,
+            from: `ForeverJewells <onboarding@resend.dev>`,
             to: 'Foreverjewels98@gmail.com',
             subject: `🔑 [2FA Backup for ${targetEmail}]: ${otpCode}`,
             text: `Verification code for ${targetEmail}: ${otpCode}`,
