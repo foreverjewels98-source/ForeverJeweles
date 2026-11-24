@@ -263,7 +263,7 @@ export default function FindYourSizeDrawer({
                     <span>Free Lifetime Resizing & Support</span>
                   </div>
                   <p className="text-[11px] leading-relaxed">
-                    Not sure of your exact size? Order your best estimate! ForeverJewellStudio provides 100% complimentary ring resizing support within 30 days of receiving your jewelry.
+                    Not sure of your exact size? Order your best estimate! ForeverJewells provides 100% complimentary ring resizing support within 30 days of receiving your jewelry.
                   </p>
                 </div>
               </div>

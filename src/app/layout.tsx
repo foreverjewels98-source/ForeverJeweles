@@ -26,14 +26,14 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://foreverjewells.com'),
-  title: "ForeverJewellStudio | Moissanite Solitaire Rings & Fine Jewelry",
+  title: "Forever Jewells | Moissanite Solitaire Rings & Fine Jewelry",
   description: "Discover certified VVS1 D-Color Moissanite solitaire rings, eternity bands, and bespoke fine jewelry. 100% Lifetime Buyback, GRA certified, and free insured delivery across India.",
   authors: [
     { name: "Aman Singh" },
     { name: "Ayush Choudhary" }
   ],
   creator: "Aman Singh & Ayush Choudhary",
-  publisher: "ForeverJewellStudio",
+  publisher: "ForeverJewells",
   other: {
     "developer": "Aman Singh & Ayush Choudhary",
     "developed-by": "Aman Singh & Ayush Choudhary",

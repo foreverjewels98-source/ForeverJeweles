@@ -45,7 +45,7 @@ export default function WhatsAppWidget() {
 
   return (
     <a
-      href="https://wa.me/919828930454?text=Hello%20ForeverJewellStudio%20Team!%20I%20have%20an%20inquiry%20regarding%20a%20product."
+      href="https://wa.me/919828930454?text=Hello%20ForeverJewells%20Team!%20I%20have%20an%20inquiry%20regarding%20a%20product."
       target="_blank"
       rel="noopener noreferrer"
       className="fixed z-40 bg-[#B76E79] hover:bg-[#043327] text-[#D39EAA] hover:text-white p-3 sm:p-3.5 rounded-full shadow-2xl border border-[#D39EAA]/50 flex items-center justify-center group cursor-pointer"

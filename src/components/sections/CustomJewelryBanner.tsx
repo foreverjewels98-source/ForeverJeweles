@@ -39,7 +39,7 @@ export default function CustomJewelryBanner() {
 
           <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
             <a
-              href="https://wa.me/919828930454?text=Hello%20ForeverJewellStudio%20Team!%20I%20have%20an%20inquiry%20regarding%20a%20product."
+              href="https://wa.me/919828930454?text=Hello%20ForeverJewells%20Team!%20I%20have%20an%20inquiry%20regarding%20a%20product."
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-[#B76E79] hover:bg-[#059669] text-[#D39EAA] hover:text-white font-sans text-xs font-bold tracking-widest uppercase rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"

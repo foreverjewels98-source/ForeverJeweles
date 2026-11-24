@@ -65,7 +65,7 @@ export default function MetalPurityGuide() {
           </h2>
           <div className="w-16 h-[1.5px] bg-[#D39EAA] mx-auto mb-4" />
           <p className="font-sans text-xs sm:text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto">
-            We never use cheap brass, copper, or hollow bands. Every ForeverJewellStudio ring is cast in solid precious metal with official assay hallmark stamps and an unbending <strong>1.8mm–2.0mm comfort-fit thickness guarantee</strong>.
+            We never use cheap brass, copper, or hollow bands. Every ForeverJewells ring is cast in solid precious metal with official assay hallmark stamps and an unbending <strong>1.8mm–2.0mm comfort-fit thickness guarantee</strong>.
           </p>
         </div>
 

@@ -85,7 +85,7 @@ export function formatWhatsAppOrderMessage(order: Order): string {
       `💵 *TOTAL: ${order.currencySymbol || '$'}${totalNum.toLocaleString()} ${order.currency || 'USD'}*\n` +
       `💳 *PAYMENT: ${paymentText}*\n\n` +
       `📅 *Date:* ${orderDate}\n` +
-      `🌐 *ForeverJewellStudio Online Store*`
+      `🌐 *ForeverJewells Online Store*`
   );
 }
 

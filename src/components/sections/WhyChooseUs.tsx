@@ -42,7 +42,7 @@ export default function WhyChooseUs() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <p className="font-sans text-xs font-bold tracking-[0.25em] text-[#8C6A1F] uppercase mb-2">
-            The ForeverJewellStudio Promise
+            The ForeverJewells Promise
           </p>
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#18181B] mb-4">
             Why Discerning Clients Choose Us

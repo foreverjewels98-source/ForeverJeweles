@@ -24,7 +24,7 @@ export default function Footer() {
           <div>
             <div className="flex flex-col items-start leading-[0.9] mb-4">
               <span className="font-serif italic text-[36px] sm:text-[44px] tracking-wide font-bold text-[#D39EAA]">
-                ForeverJewellStudio
+                Forever Jewells
               </span>
             </div>
             <p className="font-sans text-xs tracking-[0.25em] text-gray-400 uppercase mt-1 mb-4 font-semibold">
@@ -38,7 +38,7 @@ export default function Footer() {
           <div className="bg-[#27272A]/60 p-6 rounded-2xl border border-[#D39EAA]/20">
             <h4 className="font-serif text-lg font-bold text-white mb-2 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#D39EAA]" />
-              Join the ForeverJewellStudio Circle & Get 10% Off
+              Join the ForeverJewells Circle & Get 10% Off
             </h4>
             <p className="font-sans text-xs text-gray-400 mb-4">
               Receive secret drop access, bespoke ring customization discounts, and care guides.
@@ -46,7 +46,7 @@ export default function Footer() {
 
             {subscribed ? (
               <div className="p-3 bg-[#B76E79] text-[#D39EAA] text-xs font-sans rounded-xl font-bold">
-                Welcome to the ForeverJewellStudio Circle. Use code <strong>FOREVER10</strong> at checkout for 10% off.
+                Welcome to the ForeverJewells Circle. Use code <strong>FOREVER10</strong> at checkout for 10% off.
               </div>
             ) : (
               <form onSubmit={handleSubscribe} className="flex gap-2">
@@ -224,7 +224,7 @@ export default function Footer() {
         <div className="pt-8 flex flex-col lg:flex-row items-center justify-between gap-4 text-xs font-sans text-gray-400">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
             <p className="text-gray-500">
-              © 2026 ForeverJewellStudio Royal Moissanite Jewelry. All Rights Reserved.
+              © 2026 ForeverJewells Royal Moissanite Jewelry. All Rights Reserved.
             </p>
             <span className="hidden sm:inline text-gray-600">•</span>
             <p className="text-gray-400 flex items-center gap-1.5 flex-wrap justify-center">

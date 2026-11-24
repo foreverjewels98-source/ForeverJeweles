@@ -243,7 +243,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const handleWhatsAppOrder = () => {
     const sizeName = selectedSize || 'US 7';
     const message = encodeURIComponent(
-      `*INQUIRY: ${product.name}*\n• Band Colour: ${activeMetal}\n• Ring Size: ${sizeName}\n• Carat: ${product.carat}${personalisationText ? `\n• Personalisation: ${personalisationText}` : ''}\n• Price: \u20b9${currentPrice.toLocaleString('en-IN')}\n\nHi ForeverJewellStudio team, please assist me with ordering this piece!`
+      `*INQUIRY: ${product.name}*\n• Band Colour: ${activeMetal}\n• Ring Size: ${sizeName}\n• Carat: ${product.carat}${personalisationText ? `\n• Personalisation: ${personalisationText}` : ''}\n• Price: \u20b9${currentPrice.toLocaleString('en-IN')}\n\nHi ForeverJewells team, please assist me with ordering this piece!`
     );
     window.open(`https://wa.me/919999999999?text=${message}`, '_blank', 'noopener,noreferrer');
   };
@@ -507,7 +507,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                         if (navigator.share) {
                           navigator.share({
                             title: product?.name,
-                            text: `Check out this handcrafted Moissanite design at ForeverJewellStudio: ${product?.name}`,
+                            text: `Check out this handcrafted Moissanite design at ForeverJewells: ${product?.name}`,
                             url: window.location.href,
                           }).catch(() => {});
                         } else {

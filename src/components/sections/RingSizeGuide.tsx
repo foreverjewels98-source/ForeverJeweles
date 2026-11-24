@@ -22,7 +22,7 @@ const caratScales = [
     carat: '2.00 CT',
     mm: '8.0 mm',
     look: 'Statement Luxury & Brilliance',
-    description: 'Commanding attention with immense light return. The signature ForeverJewellStudio luxury solitaire size.',
+    description: 'Commanding attention with immense light return. The signature ForeverJewells luxury solitaire size.',
     diameterScale: 1.0,
   },
   {

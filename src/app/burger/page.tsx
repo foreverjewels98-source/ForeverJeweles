@@ -582,7 +582,7 @@ export default function AdminBurgerPage() {
       sku: p.sku || `FJS-${(p.shape || 'RNG').toUpperCase()}-${p.id.replace(/[^0-9]/g, '').slice(-4) || '001'}`,
       stockStatus: p.stockStatus || (p.readyToShip ? 'in_stock' : 'made_to_order'),
       stockQuantity: p.stockQuantity ?? 10,
-      metaTitle: p.metaTitle || `${p.name} | ForeverJewellStudio`,
+      metaTitle: p.metaTitle || `${p.name} | ForeverJewells`,
       metaDescription: p.metaDescription || (p.description ? p.description.slice(0, 155) : ''),
       isFeatured: p.isFeatured ?? (p.badge === 'BESTSELLER'),
       grossWeight: p.grossWeight || '3.75G',
@@ -1153,7 +1153,7 @@ export default function AdminBurgerPage() {
       sku: finalSku,
       stockStatus: formData.stockStatus || (formData.readyToShip ? 'in_stock' : 'made_to_order'),
       stockQuantity: Number(formData.stockQuantity) || 10,
-      metaTitle: formData.metaTitle || `${formData.name} | ForeverJewellStudio`,
+      metaTitle: formData.metaTitle || `${formData.name} | ForeverJewells`,
       metaDescription: formData.metaDescription || (formData.description ? formData.description.slice(0, 155) : ''),
       isFeatured: formData.isFeatured ?? (formData.badge === 'BESTSELLER'),
       price: Number(formData.price) || 2999,
@@ -1383,7 +1383,7 @@ export default function AdminBurgerPage() {
             Secure Admin Portal
           </span>
           <h1 className="font-serif text-2xl font-bold text-white mb-2">
-            ForeverJewellStudio Admin
+            ForeverJewells Admin
           </h1>
 
           {authStep === 'PASSWORD' ? (
@@ -1571,7 +1571,7 @@ export default function AdminBurgerPage() {
             </div>
             <div>
               <h1 className="font-serif text-sm font-bold text-white tracking-wide">
-                ForeverJewellStudio
+                ForeverJewells
               </h1>
               <p className="text-[10px] text-[#D39EAA] font-mono">
                 Store Catalog & Product Manager
@@ -4127,12 +4127,12 @@ export default function AdminBurgerPage() {
                       Google Search Title
                     </label>
                     <span className="text-[10px] text-gray-400">
-                      {(formData.metaTitle || `${formData.name || 'Ring'} | ForeverJewellStudio`).length} / 60 characters
+                      {(formData.metaTitle || `${formData.name || 'Ring'} | ForeverJewells`).length} / 60 characters
                     </span>
                   </div>
                   <input
                     type="text"
-                    placeholder="e.g. Oval Rose Quartz Engagement Ring | ForeverJewellStudio"
+                    placeholder="e.g. Oval Rose Quartz Engagement Ring | ForeverJewells"
                     value={formData.metaTitle || ''}
                     onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
                     className="w-full bg-black/40 border border-white/20 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#D39EAA]"
@@ -4164,14 +4164,14 @@ export default function AdminBurgerPage() {
                       F
                     </div>
                     <div>
-                      <span className="text-[11px] text-gray-300 font-medium block leading-none">ForeverJewellStudio</span>
+                      <span className="text-[11px] text-gray-300 font-medium block leading-none">ForeverJewells</span>
                       <span className="text-[10px] text-gray-500 font-mono">
-                        https://foreverjewellstudio.com &gt; products &gt; {formData.slug || 'product-url'}
+                        https://foreverjewells.com &gt; products &gt; {formData.slug || 'product-url'}
                       </span>
                     </div>
                   </div>
                   <h4 className="text-[#8ab4f8] text-sm font-medium hover:underline cursor-pointer pt-1">
-                    {formData.metaTitle || `${formData.name || 'Handcrafted Solitaire Ring'} | ForeverJewellStudio`}
+                    {formData.metaTitle || `${formData.name || 'Handcrafted Solitaire Ring'} | ForeverJewells`}
                   </h4>
                   <p className="text-gray-400 text-xs leading-relaxed">
                     {formData.metaDescription || (formData.description ? formData.description.slice(0, 150) + '...' : 'Shop certified handcrafted engagement rings in 14k Solid Gold and 925 Sterling Silver with free express delivery.')}

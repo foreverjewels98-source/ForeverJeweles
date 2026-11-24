@@ -121,8 +121,8 @@ export default function Header() {
               <div className="flex items-center justify-start shrink-0 lg:order-1 py-1 lg:py-0">
                 <Link href="/" className="group flex items-center">
                   <span className="font-serif italic text-[18px] sm:text-[30px] lg:text-[36px] font-bold text-[#D39EAA] group-hover:text-white transition-colors tracking-wide flex flex-col sm:block leading-[1.1] sm:leading-normal">
-                    <span>Forever</span>
-                    <span className="-mt-0.5 sm:mt-0">JewellStudio</span>
+                    <span>Forever</span>{' '}
+                    <span className="-mt-0.5 sm:mt-0">Jewells</span>
                   </span>
                 </Link>
               </div>
@@ -450,7 +450,7 @@ export default function Header() {
                 <div className="flex items-center justify-between p-4 border-b border-[#D39EAA]/20">
                   <div>
                     <span className="font-serif text-xl font-bold tracking-widest text-[#D39EAA] uppercase">
-                      ForeverJewellStudio
+                      ForeverJewells
                     </span>
                     <p className="font-sans text-[8.5px] tracking-widest text-[#FADBD8] uppercase font-semibold">
                       Royal Moissanite & Fine Jewelry

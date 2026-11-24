@@ -557,7 +557,7 @@ function SearchContent() {
               </p>
               <a
                 href={`https://wa.me/919828930454?text=${encodeURIComponent(
-                  `Hi ForeverJewellStudio, I searched for "${searchTerm}" on your website and would like a custom quote!`
+                  `Hi ForeverJewells, I searched for "${searchTerm}" on your website and would like a custom quote!`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

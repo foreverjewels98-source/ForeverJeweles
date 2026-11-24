@@ -86,7 +86,7 @@ export default function ContactPage() {
               </div>
             </div>
             <a
-              href="https://wa.me/919828930454?text=Hello%20ForeverJewellStudio%20Team!%20I%20have%20an%20inquiry%20regarding%20a%20product."
+              href="https://wa.me/919828930454?text=Hello%20ForeverJewells%20Team!%20I%20have%20an%20inquiry%20regarding%20a%20product."
               target="_blank"
               rel="noopener noreferrer"
               className="w-full py-2.5 bg-[#B76E79] hover:bg-[#043327] text-[#D39EAA] font-sans text-xs font-bold uppercase tracking-wider rounded-xl text-center transition-colors block"
@@ -291,7 +291,7 @@ export default function ContactPage() {
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-[#592D37] text-[#FFF0F5] p-8 rounded-3xl border border-[#D39EAA]/30 shadow-xl">
               <span className="font-serif text-2xl font-bold text-[#D39EAA] block mb-1">
-                ForeverJewellStudio
+                ForeverJewells
               </span>
               <p className="font-sans text-[10px] tracking-widest text-[#FADBD8] uppercase font-semibold mb-6">
                 Jaipur Moissanite & Fine Jewelry
@@ -345,7 +345,7 @@ export default function ContactPage() {
                 Schedule a 1-on-1 virtual appointment to view diamond sparkle live on camera before ordering.
               </p>
               <a
-                href="https://wa.me/919828930454?text=Hello%20ForeverJewellStudio%20Team!%20I%20have%20an%20inquiry%20regarding%20a%20product."
+                href="https://wa.me/919828930454?text=Hello%20ForeverJewells%20Team!%20I%20have%20an%20inquiry%20regarding%20a%20product."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#F7F5F0] hover:bg-[#E8E5DF] text-[#B76E79] font-sans text-xs font-bold uppercase tracking-wider rounded-xl border border-[#E8E5DF] transition-colors"

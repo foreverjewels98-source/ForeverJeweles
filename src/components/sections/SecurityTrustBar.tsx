@@ -103,7 +103,7 @@ export default function SecurityTrustBar() {
                 </div>
                 <div>
                   <h3 className="font-serif text-xl font-bold text-[#18181B]">
-                    ForeverJewellStudio Buyer Security & Privacy Protocol
+                    ForeverJewells Buyer Security & Privacy Protocol
                   </h3>
                   <span className="font-sans text-[11px] text-gray-500 uppercase tracking-wider block">
                     Enterprise SSL & Certified Protection
@@ -112,7 +112,7 @@ export default function SecurityTrustBar() {
               </div>
 
               <p className="font-sans text-xs text-gray-600 mb-6 leading-relaxed">
-                When you invest in fine jewelry at ForeverJewellStudio, your financial credentials, personal address, and gemstone authenticity are safeguarded by military-grade security infrastructure.
+                When you invest in fine jewelry at ForeverJewells, your financial credentials, personal address, and gemstone authenticity are safeguarded by military-grade security infrastructure.
               </p>
 
               <div className="space-y-4 font-sans text-xs">

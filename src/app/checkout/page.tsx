@@ -308,7 +308,7 @@ export default function CheckoutPage() {
   const bankIfsc = process.env.NEXT_PUBLIC_BANK_IFSC || 'KKBK0000273';
   const bankBranch = process.env.NEXT_PUBLIC_BANK_BRANCH || 'Jaipur - Vaishali Nagar';
   const bankCrn = process.env.NEXT_PUBLIC_BANK_CRN || '798804404';
-  const upiUri = `upi://pay?pa=${encodeURIComponent(upiVpa)}&pn=${encodeURIComponent('Forever Jewell Studio')}&am=${upiAmount}&cu=INR&tn=${encodeURIComponent('Fine Jewelry Order')}`;
+  const upiUri = `upi://pay?pa=${encodeURIComponent(upiVpa)}&pn=${encodeURIComponent('Forever Jewellss')}&am=${upiAmount}&cu=INR&tn=${encodeURIComponent('Fine Jewelry Order')}`;
   const upiQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=8&data=${encodeURIComponent(upiUri)}`;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -609,7 +609,7 @@ export default function CheckoutPage() {
         key: orderData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
         amount: orderData.amount,
         currency: orderData.currency || 'INR',
-        name: 'Forever Jewell Studio',
+        name: 'Forever Jewellss',
         description: 'Royal Moissanite Jewelry Order',
         image: '/images/logo.jpg',
         order_id: orderData.orderId,
@@ -912,7 +912,7 @@ export default function CheckoutPage() {
 
           {/* Reassurance note */}
           <p className="text-center text-[11px] text-gray-400">
-            Questions? <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919828930454'}`} target="_blank" rel="noopener noreferrer" className="text-[#064E3B] font-semibold hover:underline">WhatsApp us</a> · We reply within 2 hours · ForeverJewellStudio
+            Questions? <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919828930454'}`} target="_blank" rel="noopener noreferrer" className="text-[#064E3B] font-semibold hover:underline">WhatsApp us</a> · We reply within 2 hours · ForeverJewells
           </p>
         </div>
       </div>
@@ -957,7 +957,7 @@ export default function CheckoutPage() {
           </Link>
 
           <Link href="/" className="font-serif text-lg tracking-widest uppercase font-bold text-[#18181B]">
-            FOREVER JEWELL STUDIO
+            FOREVER JEWELLS
           </Link>
 
           <div className="flex items-center gap-1.5 text-xs text-[#064E3B] font-medium">

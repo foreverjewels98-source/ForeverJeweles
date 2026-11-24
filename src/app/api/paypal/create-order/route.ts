@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       purchase_units: [
         {
           reference_id: `FJ-${Date.now()}`,
-          description: `ForeverJewellStudio - Handcrafted Fine Jewelry Order (${items?.length || 1} items)`,
+          description: `ForeverJewells - Handcrafted Fine Jewelry Order (${items?.length || 1} items)`,
           amount: {
             currency_code: validCurrency,
             value: formattedAmount,
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
         },
       ],
       application_context: {
-        brand_name: 'Forever Jewell Studio',
+        brand_name: 'Forever Jewellss',
         landing_page: 'NO_PREFERENCE',
         user_action: 'PAY_NOW',
         shipping_preference: 'GET_FROM_FILE',

@@ -175,7 +175,7 @@ export default function CartPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-sm text-[#222222] tracking-tight hover:underline cursor-pointer">
-                        foreverjewellstudio
+                        foreverjewells
                       </span>
                       <div className="flex items-center text-amber-500 text-xs font-medium gap-0.5">
                         <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
@@ -376,7 +376,7 @@ export default function CartPage() {
             <div className="flex items-start gap-2.5 text-xs text-gray-600 px-1 py-1">
               <Leaf className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
               <p>
-                ForeverJewellStudio invests in climate solutions like electric delivery vehicles and carbon offsets for every international shipment.{' '}
+                ForeverJewells invests in climate solutions like electric delivery vehicles and carbon offsets for every international shipment.{' '}
                 <a
                   href="/contact"
                   className="underline hover:text-black font-medium"
@@ -598,7 +598,7 @@ export default function CartPage() {
             <div className="bg-[#FAF8F5] border border-[#E5E0D8] rounded-xl p-4 text-center text-xs text-gray-600 space-y-1">
               <div className="flex items-center justify-center gap-1.5 font-bold text-[#B76E79]">
                 <ShieldCheck className="w-4 h-4" />
-                <span>ForeverJewellStudio Purchase Protection</span>
+                <span>ForeverJewells Purchase Protection</span>
               </div>
               <p className="text-[11px] text-gray-500">
                 Shop with confidence. If an item doesn&apos;t arrive or arrives damaged, we guarantee a full replacement or refund.
@@ -617,7 +617,7 @@ export default function CartPage() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-gray-500 text-[11px]">
-            <span>© 2026 ForeverJewellStudio, Inc.</span>
+            <span>© 2026 ForeverJewells, Inc.</span>
             <Link href="/contact" className="hover:underline">Terms of Use</Link>
             <Link href="/contact" className="hover:underline">Privacy</Link>
             <Link href="/contact" className="hover:underline">Interest-based ads</Link>
