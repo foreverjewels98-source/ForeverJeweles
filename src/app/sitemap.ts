@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { products } from '@/lib/data';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://foreverjewellstudio.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://foreverjewells.com';
 
   const productUrls: MetadataRoute.Sitemap = products.map((p) => ({
     url: `${baseUrl}/products/${p.slug}`,
